@@ -4,65 +4,181 @@
     <meta charset="UTF-8">
     <title>Pin pong</title>
     <script src = 'script.js'></script>
+    <style>
+       canvas {
+           position: relative;
+           border: 1px solid;
+       }
+        #canvas{
+            z-index: 1;
+        }
+        #canvas2{
+            z-index: 2;
+            left: -505px;
+
+        }
+
+    </style>
 </head>
-<body onload ='moveRec()'  >
-  <!-- <input type="button" value="Click">-->
-    <canvas id="canvas" width=500 height=500   style="border: 1px solid"></canvas>
+<body>
+    <canvas id="canvas" width=500 height=500></canvas>
 </body>
 <script>
 
 
-    var    setKey = function (kode){
-
-
-
-
-    };
-
-
     window.onload = function () {
         window.onkeydown = function(e){
-
-            e.keyCode === 37 ? moveRec(): console.log(e.keyCode);
-            e.keyCode === 39 ? alert(e.keyCode): console.log(e.keyCode);
+            racket.dx = 0;
+            racket.dy = 0;
+            ball.dy = 0;
+            ball.dx = 0;
+            e.keyCode === 37 ? racket.dx = -1: console.log();
+            e.keyCode === 39 ? racket.dx = +1: console.log();
         };
 
     };
 </script>
 
 <script>
-    var canvas = document.getElementById('canvas'); // получить елемент холста
+    var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-    var dx = 10;
+    var racket = {};
+    racket.x = 225;
+    racket.y = 485;
+    racket.w = 50;
+    racket.h = 8;
+    racket.color = 'red' ;//'rgba(220,185,90,0.4)';
+    racket.dx = 0;
+    racket.dy = 0;
 
+    var ball = {};
+    ball.x = 250;
+    ball.y = racket.y - 5;
+    ball.radius = 5;
+    ball.startAngle = 0;
+    ball.endAngle = Math.PI * 2;
+    ball.color = 'blue';
+    ball.dx = 0;
+    ball.dy = 0;
 
-    drawRect = function () {
-        context.fillStyle = ('red');
-        context.clearRect(0,0,500,500);
-        context.fillRect(dx,480,60,10);
+    var blocks = [];
+    Block = function(x, y){
+        this.x = x;
+        this.y = y;
+        this.w = 20;
+        this.h = 20
     };
-    context.fill();
 
-
-
-
-
-    function moveRec() {
-        drawRect();
-       /* if (dx >= 480) {
-            dx = 480;
-            if (dy<480) {
-                dy++
-            } else {
-                dy = 480;
-            }
-        } else {
-            dx ++;
-        }*/
+    function draw() {
+        drawBall();
+        drawBlocks();
+        drawRacket();
     }
-var z = setInterval(moveRec, 5);
 
 
+    function createBlocks() {
+        for (var y = 125; y < 250; y += 22) {
+            for (var x = 125; x < 375; x += 22) {
+                var block = new Block(x, y);
+                blocks.push(block);
+            }
+        }
 
+    }
+    createBlocks();
+
+    function drawBlocks() {
+        for (var i = 0; i < blocks.length; i++) {
+            var block = blocks[i];
+            context.fillStyle = 'green';
+            context.beginPath();
+            context.rect(block.x, block.y, block.w, block.h );
+            context.fill();
+            context.closePath();
+        }
+    }
+
+    function drawRacket() {
+        context.fillStyle = racket.color;
+        context.beginPath();
+        context.rect(racket.x,racket.y,racket.w,racket.h);
+        context.fill();
+        context.closePath();
+    }
+
+    function drawBall() {
+        context.fillStyle = ball.color;
+        context.beginPath();
+        context.arc( ball.x,  ball.y, ball.radius, 0,Math.PI * 2 , true);
+        context.fill();
+        context.closePath();
+    }
+
+    function checkHit() {
+        for (var i = 0; i < blocks.length; i++) {
+            var block = blocks[i];
+            if (  (ball.y - ball.radius == block.y + block.h  ) && ((ball.x > block.x && ball.x < block.x + block.w)) ) {
+                alert ('попадание снизу');
+                ball.dy += 1;
+                ball.dx = 0;
+                blocks [i]  = 0;
+            }  // услови на попадение в нижнюю часть блока
+            if (  (ball.y > block.y && ball.y < block.y + block.h) && (ball.x + ball.radius == block.x)  ){
+                alert ('попадание слева');
+                /*console.log ('block.x = ' + block.x + ' block.y = ' + block.y);
+                console.log ('ball.x = ' + ball.x + ' ball.y = ' + ball.y);*/
+                blocks[i] = 0;
+                ball.y = 400;
+            }       //попадание слева  блока
+            if (  (ball.y + ball.radius == block.y ) &&  (ball.x > block.x && ball.x < block.x + block.w)  ) {
+                alert ('попадание top');
+                /*console.log ('block.x = ' + block.x + ' block.y = ' + block.y);
+                 console.log ('ball.x = ' + ball.x + ' ball.y = ' + ball.y);*/
+                blocks[i] = 0;
+                ball.y = 400;
+            }   // попадание сверху  блока
+            if (  (ball.y > block.y && ball.y < block.y + block.h ) && (ball.x - ball.radius == block.x + block.w) ) {
+                alert ('попадание right');
+                /*console.log ('block.x = ' + block.x + ' block.y = ' + block.y);
+                 console.log ('ball.x = ' + ball.x + ' ball.y = ' + ball.y);*/
+                blocks[i] = 0;
+                ball.y = 400;
+            }  // попадание справа  блока
+            if (  (ball.y + ball.radius > racket.y) && ( ball.x > racket.x && ball.x < racket.x + racket.w)  ) {
+                ball.y = 400;
+                ball.x = 250;
+            } //попадание на ракетку
+            if (ball.x-ball.radius < 0){
+
+                alert ('left wall');
+                ball.x = 250;
+            }  //left wall
+            if (ball.x + ball.radius > canvas.width){
+
+                alert ('right wall');
+                ball.x = 250;
+            }  //  right wall
+            if (ball.y-ball.radius < 0){
+
+                alert ('top wall');
+                ball.y = 450;
+            }   // top wall
+        }
+    }
+
+    function animation() {
+
+        context.clearRect(0,0,500,500);
+        ball.y +=ball.dy;
+        ball.x +=ball.dx;
+
+       checkHit();
+
+        draw();
+        requestAnimationFrame(animation);
+
+    }
+
+    animation();
 </script>
 </html>
