@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Pin pong</title>
+    <script src = 'script.js'></script>
+</head>
+<body onload ='moveRec()'  >
+  <!-- <input type="button" value="Click">-->
+    <canvas id="canvas" width=500 height=500   style="border: 1px solid"></canvas>
+</body>
+<script>
+
+
+    var    setKey = function (kode){
+
+
+
+
+    };
+
+
+    window.onload = function () {
+        window.onkeydown = function(e){
+
+            e.keyCode === 37 ? moveRec(): console.log(e.keyCode);
+            e.keyCode === 39 ? alert(e.keyCode): console.log(e.keyCode);
+        };
+
+    };
+</script>
+
+<script>
+    var canvas = document.getElementById('canvas'); // получить елемент холста
+    var context = canvas.getContext('2d');
+    var dx = 10;
+
+
+    drawRect = function () {
+        context.fillStyle = ('red');
+        context.clearRect(0,0,500,500);
+        context.fillRect(dx,480,60,10);
+    };
+    context.fill();
+
+
+
+
+
+    function moveRec() {
+        drawRect();
+       /* if (dx >= 480) {
+            dx = 480;
+            if (dy<480) {
+                dy++
+            } else {
+                dy = 480;
+            }
+        } else {
+            dx ++;
+        }*/
+    }
+var z = setInterval(moveRec, 5);
+
+
+
+</script>
+</html>
