@@ -9,15 +9,6 @@
            position: relative;
            border: 1px solid;
        }
-        #canvas{
-            z-index: 1;
-        }
-        #canvas2{
-            z-index: 2;
-            left: -505px;
-
-        }
-
     </style>
 </head>
 <body>
@@ -30,10 +21,8 @@
         window.onkeydown = function(e){
             racket.dx = 0;
             racket.dy = 0;
-            ball.dy = 0;
-            ball.dx = 0;
             e.keyCode === 37 ? racket.dx = -1: console.log();
-            e.keyCode === 39 ? racket.dx = +1: console.log();
+            e.keyCode === 39 ? racket.dx = 1: console.log();
         };
 
     };
@@ -58,8 +47,8 @@
     ball.startAngle = 0;
     ball.endAngle = Math.PI * 2;
     ball.color = 'blue';
-    ball.dx = 0;
-    ball.dy = 0;
+    ball.dx = 1;
+    ball.dy = -1;
 
     var blocks = [];
     Block = function(x, y){
@@ -118,66 +107,54 @@
         for (var i = 0; i < blocks.length; i++) {
             var block = blocks[i];
             if (  (ball.y - ball.radius == block.y + block.h  ) && ((ball.x > block.x && ball.x < block.x + block.w)) ) {
-                alert ('попадание снизу');
-                ball.dy += 1;
-                ball.dx = 0;
+                ball.dy = 1;
                 blocks [i]  = 0;
-            }  // услови на попадение в нижнюю часть блока
+            }  // попадение в нижнюю часть блока
             if (  (ball.y > block.y && ball.y < block.y + block.h) && (ball.x + ball.radius == block.x)  ){
-                alert ('попадание слева');
-                /*console.log ('block.x = ' + block.x + ' block.y = ' + block.y);
-                console.log ('ball.x = ' + ball.x + ' ball.y = ' + ball.y);*/
                 blocks[i] = 0;
-                ball.y = 400;
+                ball.dx= -1;
             }       //попадание слева  блока
             if (  (ball.y + ball.radius == block.y ) &&  (ball.x > block.x && ball.x < block.x + block.w)  ) {
-                alert ('попадание top');
-                /*console.log ('block.x = ' + block.x + ' block.y = ' + block.y);
-                 console.log ('ball.x = ' + ball.x + ' ball.y = ' + ball.y);*/
                 blocks[i] = 0;
-                ball.y = 400;
+                ball.dy = -1;
+
             }   // попадание сверху  блока
             if (  (ball.y > block.y && ball.y < block.y + block.h ) && (ball.x - ball.radius == block.x + block.w) ) {
-                alert ('попадание right');
-                /*console.log ('block.x = ' + block.x + ' block.y = ' + block.y);
-                 console.log ('ball.x = ' + ball.x + ' ball.y = ' + ball.y);*/
                 blocks[i] = 0;
-                ball.y = 400;
+                ball.dx = 1;
             }  // попадание справа  блока
-            if (  (ball.y + ball.radius > racket.y) && ( ball.x > racket.x && ball.x < racket.x + racket.w)  ) {
-                ball.y = 400;
-                ball.x = 250;
-            } //попадание на ракетку
             if (ball.x-ball.radius < 0){
-                alert ('left wall');
-                ball.x = 250;
+                ball.dx = 1;
             }  //left wall
             if (ball.x + ball.radius > canvas.width){
-
-                alert ('right wall');
-                ball.x = 250;
+                ball.dx = -1;
             }  //  right wall
             if (ball.y-ball.radius < 0){
-
-                alert ('top wall');
-                ball.y = 450;
+                ball.dy = 1;
             }   // top wall
+            if (  (ball.y + ball.radius > racket.y) && ( ball.x > racket.x && ball.x < racket.x + racket.w)  ) { // если шарик попал на ракетку
+                if (ball.x >= racket.x && ball.x <= (racket.x+racket.w)/2) {  //если попал на левую часть ракетки
+                    
+                }
+                ball.dx = 1;
+                ball.dy = -1;
+            }
         }
     }
 
     function animation() {
 
-        context.clearRect(0,0,500,500);
+        context.clearRect(0,0,500,500);  // clear canvas
+        checkHit();
         racket.y +=racket.dy;
         racket.x +=racket.dx;
-
-       checkHit();
+        ball.y +=ball.dy;
+        ball.x +=ball.dx;
 
         draw();
         requestAnimationFrame(animation);
 
     }
-
     animation();
 </script>
 </html>
